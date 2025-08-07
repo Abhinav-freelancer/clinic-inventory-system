@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Maze</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #1e1e2f;
+      color: #fff;
+      font-family: sans-serif;
+    }
+    canvas {
+      border: 2px solid #fff;
+      background-color: #1b1b2b;
+      display: block;
+    }
+    #question-box {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      color: #000;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+      z-index: 2;
+      max-width: 90vw;
+      box-sizing: border-box;
+    }
+    #stats {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="stats">
+    <div>Time: <span id="timer">0</span>s</div>
+    <div>Best: <span id="best-time">--</span>s</div>
+  </div>
+  <canvas id="maze" width="800" height="400"></canvas>
+  <div id="question-box">
+    <p id="question"></p>
+    <input type="text" id="answer" placeholder="Type your answer here" />
+    <button onclick="submitAnswer()">Submit</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('maze');
+    const ctx = canvas.getContext('2d');
+    const cellSize = 40;
+    const cols = 20;
+    const rows = 10;
+    const player = { x: 0, y: 0, lives: 3 };
+    const goal = { x: 19, y: 9 };
+    let questions = {};
+    let pendingMove = null;
+    let startTime = null;
+    let timerInterval = null;
+
+    const mazeMap = [
+      "....................",
+      ".####..######..#####",
+      ".#.................#",
+      ".#.######.######..#",
+      ".#........#........#",
+      ".#####..####..#####.",
+      ".#................#.",
+      ".#.#####..#####..##.",
+      ".#...............#..",
+      "...................."
+    ];
+
+    function drawMaze() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const isWall = mazeMap[y][x] === '#';
+          ctx.fillStyle = isWall ? '#000' : '#2f2f4f';
+          ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+          ctx.strokeStyle = '#555';
+          ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+      }
+      ctx.fillStyle = 'gold';
+      ctx.fillRect(goal.x * cellSize, goal.y * cellSize, cellSize, cellSize);
+      ctx.fillStyle = 'lime';
+      ctx.fillRect(player.x * cellSize, player.y * cellSize, cellSize, cellSize);
+    }
+
+    function isWall(x, y) {
+      return mazeMap[y][x] === '#';
+    }
+
+    function showQuestion(q) {
+      document.getElementById('question').textContent = q.q;
+      document.getElementById('answer').value = '';
+      document.getElementById('question-box').style.display = 'block';
+    }
+
+    function updateBestTime(currentTime) {
+      const best = localStorage.getItem('bestTime');
+      if (!best || currentTime < best) {
+        localStorage.setItem('bestTime', currentTime);
+      }
+      document.getElementById('best-time').textContent = localStorage.getItem('bestTime');
+    }
+
+    function checkWin() {
+      if (player.x === goal.x && player.y === goal.y) {
+        clearInterval(timerInterval);
+        const finalTime = Math.floor((Date.now() - startTime) / 1000);
+        updateBestTime(finalTime);
+        alert(`Congratulations! You reached the end in ${finalTime} seconds!`);
+        window.location.reload();
+      }
+    }
+
+    function submitAnswer() {
+      const input = document.getElementById('answer').value.trim();
+      const newX = player.x + (pendingMove?.dx || 0);
+      const newY = player.y + (pendingMove?.dy || 0);
+      const key = `${newX},${newY}`;
+      const correct = questions[key].a.toLowerCase() === input.toLowerCase();
+      document.getElementById('question-box').style.display = 'none';
+
+      if (!correct) {
+        player.lives--;
+        alert(`Wrong! Lives left: ${player.lives}`);
+        if (player.lives <= 0) {
+          clearInterval(timerInterval);
+          alert('Game Over!');
+          window.location.reload();
+        }
+      } else {
+        delete questions[key];
+        if (pendingMove) {
+          player.x += pendingMove.dx;
+          player.y += pendingMove.dy;
+          pendingMove = null;
+          checkWin();
+        }
+      }
+
+      drawMaze();
+    }
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const seconds = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById('timer').textContent = seconds;
+      }, 1000);
+    }
+
+    async function loadQuestions() {
+      const res = await fetch('questions.json');
+      questions = await res.json();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!startTime) startTimer();
+
+      const dx = { ArrowRight: 1, ArrowLeft: -1, ArrowUp: 0, ArrowDown: 0 }[e.key] || 0;
+      const dy = { ArrowRight: 0, ArrowLeft: 0, ArrowUp: -1, ArrowDown: 1 }[e.key] || 0;
+      const newX = player.x + dx;
+      const newY = player.y + dy;
+
+      if (newX < 0 || newX >= cols || newY < 0 || newY >= rows) return;
+      if (isWall(newX, newY)) return;
+
+      const key = `${newX},${newY}`;
+      if (questions[key]) {
+        pendingMove = { dx, dy };
+        showQuestion(questions[key]);
+      } else {
+        player.x = newX;
+        player.y = newY;
+        drawMaze();
+        checkWin();
+      }
+    });
+
+    loadQuestions().then(() => {
+      drawMaze();
+      const best = localStorage.getItem('bestTime');
+      if (best) {
+        document.getElementById('best-time').textContent = best;
+      }
+    });
+  </script>
+</body>
+</html>

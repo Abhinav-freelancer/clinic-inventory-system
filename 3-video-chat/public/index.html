@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3-User Video Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="room-selection">
+    <h2>Enter Room Code</h2>
+    <input type="text" id="room-input" placeholder="Room Code" maxlength="20" />
+    <button id="join-btn">Join Room</button>
+    <p id="error-msg" class="error"></p>
+  </div>
+
+  <div id="video-chat" class="hidden">
+    <div id="videos">
+      <video id="local-video" autoplay muted playsinline></video>
+      <video id="remote-video-1" autoplay playsinline></video>
+      <video id="remote-video-2" autoplay playsinline></video>
+    </div>
+    <div id="controls">
+      <button id="toggle-video">Toggle Video</button>
+      <button id="toggle-audio">Toggle Audio</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
