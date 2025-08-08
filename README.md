@@ -1,56 +1,178 @@
-# 📦 Unified Advanced Inventory Management System
+📦 Unified Advanced Inventory Management System
+A powerful, intuitive, and intelligent inventory management system tailored for clinics and healthcare environments, built with Streamlit and FastAPI. This application consolidates product, batch, supplier, purchase order, and analytics management into a single, easy-to-use interface — with an integrated AI assistant to guide your decisions.
 
-Welcome to the **Unified Advanced Inventory Management System**, a powerful and intelligent clinic inventory solution built using **Streamlit**, **FastAPI**, **SQLite**, and **Gemini AI**. This system simplifies product tracking, batch handling, supplier management, purchase orders, analytics, and more — all in a sleek and interactive dashboard.
+🚀 Features
+🔐 User Authentication
+Secure login/signup system with password hashing.
 
----
+Session-based authentication to manage users safely.
 
-## ✨ Features
+🏠 Dashboard
+Displays key inventory metrics:
 
-### 🏥 Clinic-Focused Modules
-- **📦 Product Management**: Add, view, and categorize medicines and medical supplies.
-- **📋 Batch Tracking**: Track expiry dates, costs, and quantities per batch.
-- **🏢 Supplier Management**: Manage supplier details, contacts, and credit limits.
-- **📜 Purchase Orders**: Create detailed POs with pricing, quantities, and supplier links.
-- **📊 Analytics**: Real-time insights into inventory value, low stock, and expiring batches.
-- **🚨 Alerts**: Automated alerts for low stock and upcoming expiries.
-- **🤖 AI Assistant**: Ask inventory-related questions via a smart chatbot powered by **Gemini**.
+📦 Total Inventory Value
 
-### 🧠 Intelligence Built In
-- 🔁 **Reorder Quantity Suggestions**: Based on past buying patterns.
-- 📅 **Expiry Monitoring**: Identify soon-to-expire batches automatically.
-- 💬 **Chat Assistant**: Natural language assistant trained on system logic.
+📈 Number of Products
 
----
+⚠️ Low Stock Alerts
 
-## 🖥️ Tech Stack
+⏰ Expiring Stock Summary
 
-| Layer            | Technology               |
-|------------------|---------------------------|
-| 💻 Frontend       | [Streamlit](https://streamlit.io) |
-| ⚙️ Backend        | [FastAPI](https://fastapi.tiangolo.com/) |
-| 🧠 AI Assistant   | [Gemini 1.5 Flash](https://deepmind.google/technologies/gemini/) |
-| 🗃️ Database       | SQLite                   |
-| 📈 Charts         | Plotly                   |
-| 🔐 Auth           | SHA-256 + Local Storage  |
+📦 Product Management
+Add and manage all types of medical or inventory items.
 
----
+Track:
 
-## 🚀 Getting Started
+SKU, Barcode
 
-### ✅ Prerequisites
+Name, Description
 
-Make sure you have:
-- Python 3.10+
-- Internet access for AI
-- Streamlit installed
+Category/Subcategory
 
-### 📦 Setup
+Unit Price, Cost Price
 
-```bash
-git clone https://github.com/Abhinav_freelancer/unified-inventory-app.git
-cd unified-inventory-app
+Reorder Level, Max Stock Level
 
-# Setup virtual environment (optional but recommended)
+Supplier Association
+
+📦 Batch Management
+Associate stock with batches to track:
+
+Batch Number
+
+Quantity Received & Remaining
+
+Expiry & Manufacturing Date
+
+Cost per Unit
+
+Storage Location
+
+✅ AI-powered reorder quantity suggestions based on historical patterns.
+
+Expiry tracking ensures proactive replacement.
+
+📋 Purchase Orders
+Create detailed purchase orders with:
+
+Supplier linkage
+
+Multiple line items
+
+Quantity and unit cost
+
+Auto-generated PO numbers
+
+Track all POs with status, dates, and delivery records.
+
+🏢 Supplier Management
+Maintain a complete database of your vendors:
+
+Contact details, Tax ID
+
+Payment terms, Lead time
+
+Credit limits
+
+Add, view, and manage supplier info seamlessly.
+
+📊 Analytics
+View core metrics via charts or raw JSON:
+
+Inventory valuation
+
+Expiry analysis
+
+Reorder forecasting
+
+Low stock visibility
+
+🚨 Alert System
+Monitors your stock and:
+
+Generates alerts for low inventory
+
+Warns of items expiring soon
+
+Easy toggle to clear all alerts.
+
+🤖 Smart AI Assistant (Gemini-Powered)
+Natural language assistant powered by Google Gemini.
+
+Ask questions like:
+
+“What items are low on stock?”
+
+“Which items are about to expire?”
+
+“How many gloves should I order?”
+
+Integrates with internal APIs to provide actionable insights.
+
+⚙️ Settings & Utilities
+Full DB backup and download
+
+Reset tools:
+
+Clear alerts
+
+Delete all test data
+
+Wipe the database entirely
+
+Safe and admin-oriented features for full control.
+
+🛠️ Tech Stack
+Frontend: Streamlit
+
+Backend: SQLite
+
+AI Integration: Google Gemini via google-generativeai
+
+Data Handling: pandas, plotly
+
+Language: Python 3.11+
+
+Authentication: JSON file-based with SHA256 hashing
+
+🔧 Getting Started
+bash
+Copy
+Edit
+# Clone the repo
+git clone https://github.com/your-repo/unified-inventory.git
+cd unified-inventory
+
+# Create virtual environment
 python -m venv .venv
-.\.venv\Scripts\activate  # On Windows
+.\.venv\Scripts\activate  # Windows
 
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the app
+streamlit run unified_inventory_app.py
+⚠️ Make sure to set your Gemini API key in the script:
+
+python
+Copy
+Edit
+genai.configure(api_key="YOUR_API_KEY")
+📂 Project Structure
+pgsql
+Copy
+Edit
+📁 unified_inventory_app.py
+📁 unified_inventory.db
+📁 users.json
+📁 README.md
+🧠 Future Scope
+Multi-user role-based access
+
+Inventory export to Excel/PDF
+
+REST API for external integrations
+
+Dashboard charts and trends
+
+Notification emails for alerts
